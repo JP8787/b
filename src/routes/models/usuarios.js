@@ -10,6 +10,7 @@ const usuarioSchema = new mongoose.Schema({
   primerApellido: { type: String },
   segundoApellido: { type: String },
   correoElectronico: { type: String },
+  password: { type: String },
   rol: { type: String },
 
   // Para Asesores CRORE

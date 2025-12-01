@@ -7,11 +7,14 @@ const router = express.Router();
 // Crear un nuevo usuario
 router.post("/users", async (req, res) => {
     try {
-        const { name, email, password } = req.body;
-        
+        // Accept either English or Spanish field names
+        const name = req.body.name || req.body.nombreUsuario;
+        const email = req.body.email || req.body.correoElectronico;
+        const password = req.body.password || req.body.contrasena || req.body.contraseña;
+
         // Validar que todos los campos estén presentes
         if (!name || !email || !password) {
-            return res.status(400).json({ message: "Todos los campos son requeridos" });
+            return res.status(400).json({ message: "Todos los campos son requeridos (nombre/email/password)" });
         }
 
         // Encriptar la contraseña
@@ -19,9 +22,22 @@ router.post("/users", async (req, res) => {
 
         // Crear el nuevo usuario (mapeo a esquema `usuarios`)
         const newUser = new Usuario({
-            nombreUsuario: name || email,
+            nombreUsuario: name,
             correoElectronico: email,
-            password: hashedPassword
+            password: hashedPassword,
+            tipoDocumento: req.body.tipoDocumento,
+            numeroDocumento: req.body.numeroDocumento,
+            nacionalidad: req.body.nacionalidad,
+            primerNombre: req.body.primerNombre,
+            segundoNombre: req.body.segundoNombre,
+            primerApellido: req.body.primerApellido,
+            segundoApellido: req.body.segundoApellido,
+            rol: req.body.rol,
+            liderAsignado: req.body.liderAsignado,
+            departamento: req.body.departamento,
+            ciudad: req.body.ciudad,
+            estado: req.body.estado,
+            creadoPor: req.body.creadoPor || 'system'
         });
         
         // Guardar en la base de datos
