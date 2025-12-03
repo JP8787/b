@@ -3,8 +3,8 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const baseSync = {
-  creadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
-  actualizadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  creado_por: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  actualizado_por: { type: Schema.Types.ObjectId, ref: 'Usuario' },
   deleted: { type: Boolean, default: false },
   version: { type: Number, default: 1 }
 };
@@ -16,62 +16,62 @@ const otraNacionalidadSchema = new Schema({ pais: String, pasaporte: String }, {
 const remisionSchema = new Schema({ entidadId: { type: Schema.Types.ObjectId, ref: 'Entidad' }, nombreEntidadSnapshot: String, prioridad: String, fechaRemision: Date, estado: { type: String, default: 'PENDIENTE' } }, { _id: false });
 
 const CaracterizacionSchema = new Schema({
-  eventoId: { type: Schema.Types.ObjectId, ref: 'Evento', required: true },
-  asesorId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
+  evento_id: { type: Schema.Types.ObjectId, ref: 'Evento', required: true },
+  asesor_id: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
   ciudadano: {
-    tipoDocumento: { type: String, required: true },
-    numeroDocumento: { type: String, required: true },
+    tipo_documento: { type: String, required: true },
+    numero_documento: { type: String, required: true },
     nombres: String,
     apellidos: String,
-    fechaNacimiento: Date,
+    fecha_nacimiento: Date,
     genero: String,
     telefono: String,
     email: String,
-    tieneCorreo: Boolean
+    tiene_correo: Boolean
   },
   identidad: {
-    autoReconoce: String,
-    esVictimaConflicto: Boolean,
-    otrasNacionalidades: { type: [otraNacionalidadSchema], default: [] }
+    auto_reconoce: String,
+    es_victima_conflicto: Boolean,
+    otras_nacionalidades: { type: [otraNacionalidadSchema], default: [] }
   },
-  formacion: { nivelEstudio: String, areaConocimiento: String },
+  formacion: { nivel_estudio: String, area_conocimiento: String },
   migracion: {
-    conQuienMigro: String,
-    razonMigracion: String,
-    actividadAntes: String,
-    actividadOtra: String,
-    ciudadDestino: String,
-    departamentoDestino: String,
-    direccionColombia: String,
-    motivoRetorno: String,
-    fechaIngresoPais: Date,
-    paisProcedencia: String,
-    tiempoPermanencia: tiempoPermanenciaSchema,
-    riesgoTrayecto: { huboRiesgo: Boolean, descripcion: String }
+    con_quien_migro: String,
+    razon_migracion: String,
+    actividad_antes: String,
+    actividad_otra: String,
+    ciudad_destino: String,
+    departamento_destino: String,
+    direccion_colombia: String,
+    motivo_retorno: String,
+    fecha_ingreso_pais: Date,
+    pais_procedencia: String,
+    tiempo_permanencia: tiempoPermanenciaSchema,
+    riesgo_trayecto: { hubo_riesgo: Boolean, descripcion: String }
   },
-  redesApoyo: {
-    retornaConNucleo: Boolean,
-    composicionFamiliar: [String],
-    hijosEnColombia: Boolean,
-    hijosEstudian: Boolean,
-    programaEstatal: { esBeneficiario: Boolean, nombre: String },
-    apoyoFamiliar: { tieneApoyo: Boolean, quien: String, relacion: String, contacto: String }
+  redes_apoyo: {
+    retorna_con_nucleo: Boolean,
+    composicion_familiar: [String],
+    hijos_en_colombia: Boolean,
+    hijos_estudian: Boolean,
+    programa_estatal: { es_beneficiario: Boolean, nombre: String },
+    apoyo_familiar: { tiene_apoyo: Boolean, quien: String, relacion: String, contacto: String }
   },
   salud: {
-    accidente: { huboAccidente: Boolean, descripcion: String },
+    accidente: { hubo_accidente: Boolean, descripcion: String },
     discapacidad: { tiene: Boolean, tipo: String },
-    afiliadoSalud: Boolean
+    afiliado_salud: Boolean
   },
   gestion: {
-    registradoRUR: Boolean,
-    tipoRetorno: String,
-    necesidadProteccion: { tiene: Boolean, condicion: String },
-    motivoRemision: String,
-    remisionHechaPor: String,
+    registrado_RUR: Boolean,
+    tipo_Retorno: String,
+    necesidad_proteccion: { tiene: Boolean, condicion: String },
+    motivo_remision: String,
+    remision_hecha_por: String,
     remisiones: { type: [remisionSchema], default: [] },
     observaciones: String
   },
-  metadataSync: { creadoOffline: { type: Boolean, default: false }, ultimaSincronizacion: Date, dispositivoId: String },
+  metadataSync: { creado_offline: { type: Boolean, default: false }, ultima_sincronizacion: Date, dispositivoId: String },
   ...baseSync
 }, { timestamps: { createdAt: 'fechaCreacion', updatedAt: 'fechaActualizacion' }, collection: 'caracterizaciones' });
 

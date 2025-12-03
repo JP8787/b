@@ -3,8 +3,8 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const baseSync = {
-  creadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
-  actualizadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  creado_por: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  actualizado_por: { type: Schema.Types.ObjectId, ref: 'Usuario' },
   deleted: { type: Boolean, default: false },
   version: { type: Number, default: 1 }
 };
@@ -12,13 +12,13 @@ const baseSync = {
 const registroSchema = new Schema({
   fecha: { type: Date, default: Date.now },
   accion: String,
-  gestionAnte: String,
-  tipoConsulta: String,
-  registradoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' }
+  gestion_ante: String,
+  tipo_consulta: String,
+  registrado_por: { type: Schema.Types.ObjectId, ref: 'Usuario' }
 }, { _id: false });
 
 const SeguimientoSchema = new Schema({
-  caracterizacionId: { type: Schema.Types.ObjectId, ref: 'Caracterizacion', required: true },
+  caracterizacion_id: { type: Schema.Types.ObjectId, ref: 'Caracterizacion', required: true },
   registros: { type: [registroSchema], default: [] },
   estado: { type: String, enum: ['ABIERTO', 'CERRADO'], default: 'ABIERTO' },
   ...baseSync

@@ -4,7 +4,7 @@ const { Schema } = mongoose;
 
 const baseSync = {
   creadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
-  actualizadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  actualizado_por: { type: Schema.Types.ObjectId, ref: 'Usuario' },
   deleted: { type: Boolean, default: false },
   version: { type: Number, default: 1 }
 };

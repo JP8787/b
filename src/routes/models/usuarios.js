@@ -3,23 +3,23 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const baseSync = {
-  creadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
-  actualizadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  creado_por: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  actualizado_por: { type: Schema.Types.ObjectId, ref: 'Usuario' },
   deleted: { type: Boolean, default: false },
   version: { type: Number, default: 1 }
 };
 
 const UsuarioSchema = new Schema({
-  nombreUsuario: { type: String, required: true, unique: true, index: true },
+  nombre_usuario: { type: String, required: true, unique: true, index: true },
   password: { type: String, select: false },
-  tipoDocumento: { type: String, required: true },
-  numeroDocumento: { type: String, required: true },
+  tipo_documento: { type: String, required: true },
+  numero_documento: { type: String, required: true },
   nacionalidad: { type: String },
   nombres: { type: String, required: true },
   apellidos: { type: String, required: true },
-  correoElectronico: { type: String, required: true, index: true },
+  correo_electronico: { type: String, required: true, index: true },
   rol: { type: String, enum: ['LIDER', 'ASESOR_CRORE', 'ADMIN'], required: true },
-  liderAsignado: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  lider_asignado: { type: Schema.Types.ObjectId, ref: 'Usuario' },
   departamento: { type: String },
   ciudad: { type: String },
   estado: { type: String, enum: ['ACTIVO', 'INACTIVO'], default: 'ACTIVO' },
