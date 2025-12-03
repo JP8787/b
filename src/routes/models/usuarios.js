@@ -1,36 +1,32 @@
 import mongoose from 'mongoose';
 
-const usuarioSchema = new mongoose.Schema({
-  nombreUsuario: { type: String },
-  tipoDocumento: { type: String },
-  numeroDocumento: { type: String },
-  nacionalidad: { type: String },
-  primerNombre: { type: String },
-  segundoNombre: { type: String },
-  primerApellido: { type: String },
-  segundoApellido: { type: String },
-  correoElectronico: { type: String },
-  password: { type: String },
-  rol: { type: String },
+const { Schema } = mongoose;
 
-  // Para Asesores CRORE
-  liderAsignado: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },
+const baseSync = {
+  creadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  actualizadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  deleted: { type: Boolean, default: false },
+  version: { type: Number, default: 1 }
+};
+
+const UsuarioSchema = new Schema({
+  nombreUsuario: { type: String, required: true, unique: true, index: true },
+  password: { type: String, select: false },
+  tipoDocumento: { type: String, required: true },
+  numeroDocumento: { type: String, required: true },
+  nacionalidad: { type: String },
+  nombres: { type: String, required: true },
+  apellidos: { type: String, required: true },
+  correoElectronico: { type: String, required: true, index: true },
+  rol: { type: String, enum: ['LIDER', 'ASESOR_CRORE', 'ADMIN'], required: true },
+  liderAsignado: { type: Schema.Types.ObjectId, ref: 'Usuario' },
   departamento: { type: String },
   ciudad: { type: String },
-
   estado: { type: String, enum: ['ACTIVO', 'INACTIVO'], default: 'ACTIVO' },
+  ...baseSync
+}, { timestamps: { createdAt: 'fechaCreacion', updatedAt: 'fechaActualizacion' }, collection: 'usuarios' });
 
-  creadoPor: { type: String },
-  actualizadoPor: { type: String }
-}, {
-  collection: 'usuarios',
-  timestamps: { createdAt: 'fechaCreacion', updatedAt: 'fechaActualizacion' }
-});
+UsuarioSchema.index({ numeroDocumento: 1, tipoDocumento: 1 });
+UsuarioSchema.index({ liderAsignado: 1 });
 
-// Índices sugeridos
-usuarioSchema.index({ numeroDocumento: 1, tipoDocumento: 1 });
-usuarioSchema.index({ nombreUsuario: 1 }, { unique: true, sparse: true });
-usuarioSchema.index({ rol: 1, estado: 1 });
-usuarioSchema.index({ liderAsignado: 1 });
-
-export default mongoose.model('Usuario', usuarioSchema);
+export default mongoose.model('Usuario', UsuarioSchema);

@@ -1,19 +1,26 @@
 import mongoose from 'mongoose';
 
-const configuracionSchema = new mongoose.Schema({
+const { Schema } = mongoose;
+
+const baseSync = {
+  creadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  actualizadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  deleted: { type: Boolean, default: false },
+  version: { type: Number, default: 1 }
+};
+
+const ConfiguracionSchema = new Schema({
   clave: { type: String, required: true, unique: true },
   valor: { type: String },
   descripcion: { type: String },
   tipo: { type: String },
   modulo: { type: String },
   editable: { type: Boolean, default: true },
-  usuarioCreacion: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },
-  usuarioActualizacion: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' }
-}, {
-  collection: 'configuracion',
-  timestamps: { createdAt: 'fechaCreacion', updatedAt: 'fechaActualizacion' }
-});
+  usuarioCreacion: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  usuarioActualizacion: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  ...baseSync
+}, { timestamps: { createdAt: 'fechaCreacion', updatedAt: 'fechaActualizacion' }, collection: 'configuracion' });
 
-configuracionSchema.index({ modulo: 1 });
+ConfiguracionSchema.index({ modulo: 1 });
 
-export default mongoose.model('Configuracion', configuracionSchema);
+export default mongoose.model('Configuracion', ConfiguracionSchema);

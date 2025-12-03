@@ -1,28 +1,30 @@
 import mongoose from 'mongoose';
 
-const registroSchema = new mongoose.Schema({
-  fecha: { type: Date },
-  accionRealizada: { type: String },
-  gestionRealizadaAnte: { type: String },
-  tipoConsulta: { type: String },
-  registradoPor: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },
-  fechaRegistro: { type: Date }
+const { Schema } = mongoose;
+
+const baseSync = {
+  creadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  actualizadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  deleted: { type: Boolean, default: false },
+  version: { type: Number, default: 1 }
+};
+
+const registroSchema = new Schema({
+  fecha: { type: Date, default: Date.now },
+  accion: String,
+  gestionAnte: String,
+  tipoConsulta: String,
+  registradoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' }
 }, { _id: false });
 
-const seguimientoSchema = new mongoose.Schema({
-  caracterizacionId: { type: mongoose.Schema.Types.ObjectId, ref: 'Caracterizacion' },
-  enlaceId: { type: mongoose.Schema.Types.ObjectId },
-  asesorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },
+const SeguimientoSchema = new Schema({
+  caracterizacionId: { type: Schema.Types.ObjectId, ref: 'Caracterizacion', required: true },
   registros: { type: [registroSchema], default: [] },
   estado: { type: String, enum: ['ABIERTO', 'CERRADO'], default: 'ABIERTO' },
-  creadoPor: { type: String },
-  actualizadoPor: { type: String }
-}, {
-  collection: 'seguimientos',
-  timestamps: { createdAt: 'fechaCreacion', updatedAt: 'fechaActualizacion' }
-});
+  ...baseSync
+}, { timestamps: { createdAt: 'fechaCreacion', updatedAt: 'fechaActualizacion' }, collection: 'seguimientos' });
 
-seguimientoSchema.index({ caracterizacionId: 1 });
-seguimientoSchema.index({ estado: 1 });
+SeguimientoSchema.index({ caracterizacionId: 1 });
+SeguimientoSchema.index({ estado: 1 });
 
-export default mongoose.model('Seguimiento', seguimientoSchema);
+export default mongoose.model('Seguimiento', SeguimientoSchema);

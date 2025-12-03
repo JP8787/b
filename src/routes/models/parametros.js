@@ -1,20 +1,25 @@
 import mongoose from 'mongoose';
 
-const parametroSchema = new mongoose.Schema({
-  tipo: { type: String },
-  codigo: { type: String },
-  valor: { type: String },
+const { Schema } = mongoose;
+
+const baseSync = {
+  creadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  actualizadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  deleted: { type: Boolean, default: false },
+  version: { type: Number, default: 1 }
+};
+
+const ParametroSchema = new Schema({
+  tipo: { type: String, required: true },
+  codigo: { type: String, required: true },
+  nombre: { type: String, required: true },
+  padreCodigo: { type: String, index: true },
   valorAdicional: { type: String },
-  codigoDIVIPOLA: { type: String },
-  codigoISO3166: { type: String },
-  orden: { type: Number },
-  estado: { type: String, enum: ['ACTIVO','INACTIVO'], default: 'ACTIVO' }
-}, {
-  collection: 'parametros',
-  timestamps: { createdAt: 'fechaCreacion', updatedAt: 'fechaActualizacion' }
-});
+  orden: { type: Number, default: 0 },
+  estado: { type: String, default: 'ACTIVO' },
+  ...baseSync
+}, { timestamps: { createdAt: 'fechaCreacion', updatedAt: 'fechaActualizacion' }, collection: 'parametros' });
 
-parametroSchema.index({ tipo: 1, codigo: 1 }, { unique: true, sparse: true });
-parametroSchema.index({ tipo: 1, estado: 1 });
+ParametroSchema.index({ tipo: 1, codigo: 1 }, { unique: true });
 
-export default mongoose.model('Parametro', parametroSchema);
+export default mongoose.model('Parametro', ParametroSchema);

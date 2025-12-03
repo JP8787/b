@@ -1,25 +1,21 @@
 import mongoose from 'mongoose';
 
-const auditoriaSchema = new mongoose.Schema({
-  coleccion: { type: String },
-  documentoId: { type: mongoose.Schema.Types.ObjectId },
-  operacion: { type: String },
-  usuario: { type: String },
-  datosAnteriores: { type: Object },
-  datosNuevos: { type: Object },
-  modoConexion: { type: String },
-  dispositivoId: { type: String },
-  estadoSincronizacion: { type: String },
-  mensajeError: { type: String },
-  fechaOperacion: { type: Date, default: Date.now },
-  ip: { type: String }
-}, {
-  collection: 'auditoria'
-});
+const { Schema } = mongoose;
 
-auditoriaSchema.index({ coleccion: 1, documentoId: 1 });
-auditoriaSchema.index({ usuario: 1, fechaOperacion: -1 });
-auditoriaSchema.index({ estadoSincronizacion: 1 });
-auditoriaSchema.index({ fechaOperacion: -1 });
+const AuditoriaSchema = new Schema({
+  coleccion: { type: String, required: true },
+  documentoId: { type: Schema.Types.ObjectId, required: true },
+  accion: { type: String, enum: ['CREATE', 'UPDATE', 'DELETE', 'SYNC_ERROR'] },
+  cambios: Schema.Types.Mixed,
+  usuarioId: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  ip: String,
+  userAgent: String,
+  fecha: { type: Date, default: Date.now }
+}, { collection: 'auditoria' });
 
-export default mongoose.model('Auditoria', auditoriaSchema);
+// TTL index: borrar después de 1 año
+AuditoriaSchema.index({ fecha: 1 }, { expireAfterSeconds: 31536000 });
+AuditoriaSchema.index({ coleccion: 1, documentoId: 1 });
+AuditoriaSchema.index({ usuarioId: 1, fecha: -1 });
+
+export default mongoose.model('Auditoria', AuditoriaSchema);

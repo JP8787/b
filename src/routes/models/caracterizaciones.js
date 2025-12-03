@@ -1,123 +1,80 @@
 import mongoose from 'mongoose';
 
-const tiempoPermanenciaSchema = new mongoose.Schema({
-  anos: { type: Number },
-  meses: { type: Number },
-  dias: { type: Number }
-}, { _id: false });
+const { Schema } = mongoose;
 
-const otraNacionalidadSchema = new mongoose.Schema({
-  nacionalidad: { type: String },
-  numeroPasaporte: { type: String }
-}, { _id: false });
+const baseSync = {
+  creadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  actualizadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  deleted: { type: Boolean, default: false },
+  version: { type: Number, default: 1 }
+};
 
-const remisionSchema = new mongoose.Schema({
-  entidad: { type: String },
-  correoEntidad: { type: String },
-  prioridad: { type: String },
-  fechaRemision: { type: Date }
-}, { _id: false });
+const tiempoPermanenciaSchema = new Schema({ anios: Number, meses: Number, dias: Number }, { _id: false });
 
-const caracterizacionSchema = new mongoose.Schema({
-  eventoId: { type: mongoose.Schema.Types.ObjectId, ref: 'Evento' },
-  fechaRegistro: { type: Date },
-  asesorId: { type: mongoose.Schema.Types.ObjectId, ref: 'Usuario' },
+const otraNacionalidadSchema = new Schema({ pais: String, pasaporte: String }, { _id: false });
 
-  tipoDocumento: { type: String },
-  numeroDocumento: { type: String },
-  primerNombre: { type: String },
-  segundoNombre: { type: String },
-  primerApellido: { type: String },
-  segundoApellido: { type: String },
-  fechaNacimiento: { type: Date },
-  genero: { type: String },
-  telefono: { type: String },
-  tieneCorreo: { type: Boolean },
-  correoElectronico: { type: String },
+const remisionSchema = new Schema({ entidadId: { type: Schema.Types.ObjectId, ref: 'Entidad' }, nombreEntidadSnapshot: String, prioridad: String, fechaRemision: Date, estado: { type: String, default: 'PENDIENTE' } }, { _id: false });
 
-  autoReconoce: { type: String },
-  esVictimaConflicto: { type: Boolean },
+const CaracterizacionSchema = new Schema({
+  eventoId: { type: Schema.Types.ObjectId, ref: 'Evento', required: true },
+  asesorId: { type: Schema.Types.ObjectId, ref: 'Usuario', required: true },
+  ciudadano: {
+    tipoDocumento: { type: String, required: true },
+    numeroDocumento: { type: String, required: true },
+    nombres: String,
+    apellidos: String,
+    fechaNacimiento: Date,
+    genero: String,
+    telefono: String,
+    email: String,
+    tieneCorreo: Boolean
+  },
+  identidad: {
+    autoReconoce: String,
+    esVictimaConflicto: Boolean,
+    otrasNacionalidades: { type: [otraNacionalidadSchema], default: [] }
+  },
+  formacion: { nivelEstudio: String, areaConocimiento: String },
+  migracion: {
+    conQuienMigro: String,
+    razonMigracion: String,
+    actividadAntes: String,
+    actividadOtra: String,
+    ciudadDestino: String,
+    departamentoDestino: String,
+    direccionColombia: String,
+    motivoRetorno: String,
+    fechaIngresoPais: Date,
+    paisProcedencia: String,
+    tiempoPermanencia: tiempoPermanenciaSchema,
+    riesgoTrayecto: { huboRiesgo: Boolean, descripcion: String }
+  },
+  redesApoyo: {
+    retornaConNucleo: Boolean,
+    composicionFamiliar: [String],
+    hijosEnColombia: Boolean,
+    hijosEstudian: Boolean,
+    programaEstatal: { esBeneficiario: Boolean, nombre: String },
+    apoyoFamiliar: { tieneApoyo: Boolean, quien: String, relacion: String, contacto: String }
+  },
+  salud: {
+    accidente: { huboAccidente: Boolean, descripcion: String },
+    discapacidad: { tiene: Boolean, tipo: String },
+    afiliadoSalud: Boolean
+  },
+  gestion: {
+    registradoRUR: Boolean,
+    tipoRetorno: String,
+    necesidadProteccion: { tiene: Boolean, condicion: String },
+    motivoRemision: String,
+    remisionHechaPor: String,
+    remisiones: { type: [remisionSchema], default: [] },
+    observaciones: String
+  },
+  metadataSync: { creadoOffline: { type: Boolean, default: false }, ultimaSincronizacion: Date, dispositivoId: String },
+  ...baseSync
+}, { timestamps: { createdAt: 'fechaCreacion', updatedAt: 'fechaActualizacion' }, collection: 'caracterizaciones' });
 
-  otraNacionalidad: { type: [otraNacionalidadSchema], default: [] },
+CaracterizacionSchema.index({ 'ciudadano.tipoDocumento': 1, 'ciudadano.numeroDocumento': 1, eventoId: 1 }, { unique: true });
 
-  nivelEstudio: { type: String },
-  areaConocimiento: { type: String },
-
-  conQuienMigro: { type: String },
-  razonMigracion: { type: String },
-  actividadPrincipalAntesMigracion: { type: String },
-  actividadOtra: { type: String },
-
-  ciudadDestino: { type: String },
-  departamentoDestino: { type: String },
-  direccionResidencia: { type: String },
-
-  motivoRetorno: { type: String },
-  fechaIngresoAlPais: { type: Date },
-  paisDelQueRegresa: { type: String },
-  tiempoPermanencia: { type: tiempoPermanenciaSchema },
-
-  situacionRiesgo: { type: Boolean },
-  descripcionRiesgo: { type: String },
-
-  retornaConNucleoFamiliar: { type: Boolean },
-  composicionNucleoFamiliar: { type: [String], default: [] },
-
-  expectativaEnCincoAños: { type: String },
-  paisDestino: { type: String },
-  ciudadDestino: { type: String },
-
-  tieneHijosEnColombia: { type: Boolean },
-  hijosAsistenInstitucion: { type: Boolean },
-  beneficiarioProgramaEstatal: { type: Boolean },
-  programaEstatal: { type: String },
-
-  apoyoFamiliar: { type: Boolean },
-  quienApoya: { type: String },
-  relacionFamiliar: { type: String },
-  numeroContactoFamiliar: { type: String },
-
-  accidenteEnfermedad: { type: Boolean },
-  descripcionAccidenteEnfermedad: { type: String },
-  tieneDiscapacidad: { type: Boolean },
-  tipoDiscapacidad: { type: String },
-  vinculadoRegimenSalud: { type: Boolean },
-
-  registradoRUR: { type: Boolean },
-  tipoRetorno: { type: String },
-  interesadoOrientacion: { type: Boolean },
-  necesidadProteccion: { type: Boolean },
-  condicionProteccion: { type: String },
-
-  motivoRemision: { type: String },
-  remisionHechaPor: { type: String },
-
-  remisiones: { type: [remisionSchema], default: [] },
-
-  cargoGIT: { type: String },
-  correoGIT: { type: String },
-  lugar: { type: String },
-  observaciones: { type: String },
-
-  estado: { type: String },
-  modoConexion: { type: String, enum: ['ONLINE', 'OFFLINE'] },
-  sincronizado: { type: Boolean, default: true },
-  fechaSincronizacion: { type: Date },
-
-  consentimientoDatos: { type: Boolean },
-
-  creadoPor: { type: String },
-  actualizadoPor: { type: String }
-}, {
-  collection: 'caracterizaciones',
-  timestamps: { createdAt: 'fechaCreacion', updatedAt: 'fechaActualizacion' }
-});
-
-// Índices sugeridos
-caracterizacionSchema.index({ numeroDocumento: 1, tipoDocumento: 1 });
-caracterizacionSchema.index({ eventoId: 1, estado: 1 });
-caracterizacionSchema.index({ sincronizado: 1, modoConexion: 1 });
-caracterizacionSchema.index({ fechaRegistro: 1 });
-caracterizacionSchema.index({ asesorId: 1 });
-
-export default mongoose.model('Caracterizacion', caracterizacionSchema);
+export default mongoose.model('Caracterizacion', CaracterizacionSchema);

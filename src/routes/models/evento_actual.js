@@ -1,22 +1,30 @@
 import mongoose from 'mongoose';
 
-const eventoActualSchema = new mongoose.Schema({
-  eventoId: { type: mongoose.Schema.Types.ObjectId, unique: true },
+const { Schema } = mongoose;
+
+const baseSync = {
+  creadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  actualizadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  deleted: { type: Boolean, default: false },
+  version: { type: Number, default: 1 }
+};
+
+const EventoActualSchema = new Schema({
+  eventoId: { type: Schema.Types.ObjectId },
   datosEvento: {
-    fechaInicio: { type: Date },
-    fechaFinalizacion: { type: Date },
-    ciudad: { type: String },
-    lugar: { type: String },
-    estado: { type: String },
-    asesores: [{ type: mongoose.Schema.Types.ObjectId }]
+    fechaInicio: Date,
+    fechaFinalizacion: Date,
+    ciudad: String,
+    lugar: String,
+    estado: String,
+    asesores: [{ type: Schema.Types.ObjectId }]
   },
   fechaInicializacion: { type: Date, default: Date.now },
-  usuarioInicializacion: { type: mongoose.Schema.Types.ObjectId },
-  sincronizado: { type: Boolean, default: true }
-}, {
-  collection: 'evento_actual'
-});
+  usuarioInicializacion: { type: Schema.Types.ObjectId },
+  sincronizado: { type: Boolean, default: true },
+  ...baseSync
+}, { timestamps: { createdAt: 'fechaCreacion', updatedAt: 'fechaActualizacion' }, collection: 'evento_actual' });
 
-eventoActualSchema.index({ eventoId: 1 }, { unique: true });
+EventoActualSchema.index({ eventoId: 1 }, { unique: true });
 
-export default mongoose.model('EventoActual', eventoActualSchema);
+export default mongoose.model('EventoActual', EventoActualSchema);
