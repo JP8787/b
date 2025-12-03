@@ -3,8 +3,8 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const baseSync = {
-  creadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
-  actualizadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  creado_por: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  actualizado_por: { type: Schema.Types.ObjectId, ref: 'Usuario' },
   deleted: { type: Boolean, default: false },
   version: { type: Number, default: 1 }
 };
@@ -13,8 +13,8 @@ const ParametroSchema = new Schema({
   tipo: { type: String, required: true },
   codigo: { type: String, required: true },
   nombre: { type: String, required: true },
-  padreCodigo: { type: String, index: true },
-  valorAdicional: { type: String },
+  padre_codigo: { type: String, index: true },
+  valor_adicional: { type: String },
   orden: { type: Number, default: 0 },
   estado: { type: String, default: 'ACTIVO' },
   ...baseSync

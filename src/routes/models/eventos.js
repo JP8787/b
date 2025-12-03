@@ -3,8 +3,8 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 const baseSync = {
-  creadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
-  actualizadoPor: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  creado_por: { type: Schema.Types.ObjectId, ref: 'Usuario' },
+  actualizado_por: { type: Schema.Types.ObjectId, ref: 'Usuario' },
   deleted: { type: Boolean, default: false },
   version: { type: Number, default: 1 }
 };
@@ -13,11 +13,11 @@ const EventoSchema = new Schema({
   nombre: { type: String },
   ciudad: { type: String, required: true },
   departamento: { type: String, required: true },
-  lugarCaracterizacion: { type: String },
-  fechaInicio: { type: Date, required: true },
-  fechaFin: { type: Date, required: true },
+  lugar_caracterizacion: { type: String },
+  fecha_inicio: { type: Date, required: true },
+  fecha_fin: { type: Date, required: true },
   estado: { type: String, enum: ['ACTIVO', 'INACTIVO', 'CERRADO'], default: 'ACTIVO' },
-  asesoresAsignados: [{ type: Schema.Types.ObjectId, ref: 'Usuario' }],
+  asesores_asignados: [{ type: Schema.Types.ObjectId, ref: 'Usuario' }],
   ...baseSync
 }, { timestamps: { createdAt: 'fechaCreacion', updatedAt: 'fechaActualizacion' }, collection: 'eventos' });
 
