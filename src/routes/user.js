@@ -21,6 +21,12 @@ router.post("/users", async (req, res) => {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         // Crear el nuevo usuario (mapeo a esquema `usuarios`)
+        // Soporta campos legacy (primerNombre, etc.) y nuevos (nombres, apellidos)
+        const nombres = req.body.nombres || 
+            [req.body.primerNombre, req.body.segundoNombre].filter(Boolean).join(' ');
+        const apellidos = req.body.apellidos || 
+            [req.body.primerApellido, req.body.segundoApellido].filter(Boolean).join(' ');
+
         const newUser = new Usuario({
             nombreUsuario: name,
             correoElectronico: email,
@@ -28,16 +34,14 @@ router.post("/users", async (req, res) => {
             tipoDocumento: req.body.tipoDocumento,
             numeroDocumento: req.body.numeroDocumento,
             nacionalidad: req.body.nacionalidad,
-            primerNombre: req.body.primerNombre,
-            segundoNombre: req.body.segundoNombre,
-            primerApellido: req.body.primerApellido,
-            segundoApellido: req.body.segundoApellido,
+            nombres: nombres,
+            apellidos: apellidos,
             rol: req.body.rol,
             liderAsignado: req.body.liderAsignado,
             departamento: req.body.departamento,
             ciudad: req.body.ciudad,
             estado: req.body.estado,
-            creadoPor: req.body.creadoPor || 'system'
+            creadoPor: req.body.creadoPor
         });
         
         // Guardar en la base de datos
